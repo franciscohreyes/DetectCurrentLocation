@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Detectar mi ubicación</title>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+</head>
+<body>
+	<p class="message"></p>
+	<form action="" method="POST">
+		<label for="">Latitud
+		<input type="text" id="latitude" name="latitude">
+		</label>
+		<label for="">Longitud
+		<input type="text" id="longitude" name="longitude">
+		</label>
+		<input type="button" id="btnUbication" value="Detectar mi Ubicación">
+	</form>
+	<div class="" id="map" style="width: 100%; height: 350px;"></div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA01vZmL-1IdxCCJevyBdZSEYJ04Wu2EWE&callback=initMap" async defer></script>
+<script>
+	var map;
+	function initMap(){
+		var mapCenter = new google.maps.LatLng(19.4410567, -99.0967915);
+		map = new google.maps.Map($("#map")[0], {
+	        center: mapCenter,
+	        navigationControl: false,
+	        zoomControl: false,
+	        scaleControl: false,
+	        zoom: 20,
+	        scrollwheel: false
+		});
+
+		$("#btnUbication").click(function(){
+			if("geolocation" in navigator){
+				navigator.geolocation.getCurrentPosition(function(position){
+					var infoWindow =  new google.maps.InfoWindow({
+						content: "Tu ubicación: " + position.coords.latitude +" "+ position.coords.longitude
+					});
+
+					var _pos   = {lat: position.coords.latitude, lng: position.coords.longitude};
+					infoWindow.setPosition(_pos);
+					$("#latitude").val(position.coords.latitude);
+					$("#longitude").val(position.coords.longitude);
+
+					 var marker = new google.maps.Marker({
+				        position: _pos,
+				        map: map,
+				        title: 'Mi ubicación actual'
+				    });
+				    
+				    google.maps.event.addListener(marker, 'click', function() { 
+				        infoWindow.open(map,marker);
+				    });
+
+					map.panTo(_pos);
+				});
+			} else {
+				$(".message").html("No hemos podido obtener tu ubicación");
+			}
+		});
+	}
+</script>
+</body>
+</html>
